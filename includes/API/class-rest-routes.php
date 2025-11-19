@@ -20,6 +20,19 @@ class Rest_Routes {
             'permission_callback' => '__return_true',
         ) );
 
+		public static function register_routes() {
+        
+        // 🔥 CORS UNIVERSAL (Funciona em Nginx, Apache, etc)
+        add_filter( 'rest_pre_serve_request', function( $value ) {
+            header( 'Access-Control-Allow-Origin: *' ); // Em produção, o user pode restringir via filtro se quiser
+            header( 'Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE' );
+            header( 'Access-Control-Allow-Credentials: true' );
+            header( 'Access-Control-Allow-Headers: Authorization, Content-Type, X-Requested-With' );
+            return $value;
+        });
+
+        // ... (resto das rotas igual estava)
+
         // 2. Register
         register_rest_route( self::NAMESPACE, '/auth/register', array(
             'methods'             => WP_REST_Server::CREATABLE,
@@ -253,3 +266,4 @@ class Rest_Routes {
 		);
 	}
 }
+
