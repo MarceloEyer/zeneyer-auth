@@ -1,0 +1,24 @@
+{
+  "name": "zeneyer/auth-plugin",
+  "description": "Simple, secure, and lightweight JWT Authentication for Headless WordPress.",
+  "type": "wordpress-plugin",
+  "license": "GPL-2.0-or-later",
+  "authors": [
+    {
+      "name": "ZenEyer Team",
+      "email": "tech@zeneyer.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.4",
+    "firebase/php-jwt": "^6.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "ZenEyer\\Auth\\": "includes/"
+    }
+  },
+  "config": {
+    "optimize-autoloader": true
+  }
+}
