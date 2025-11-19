@@ -34,7 +34,7 @@ jobs:
         password: ${{ secrets.FTP_PASSWORD }}
         protocol: ftps # Hostinger suporta FTPS (mais seguro)
         # Cuidado aqui: Caminho EXATO para a pasta do plugin na Hostinger
-        server-dir: /domains/seusite.com/public_html/wp-content/plugins/zeneyer-auth/
+        server-dir: /home/u790739895/domains/djzeneyer.com/public_html/wp-content/plugins/zeneyer-auth/
         exclude: |
           **/.git*
           **/.github*
