@@ -5,10 +5,10 @@ on:
     branches:
       - main
 
-# 🔥 NOVO: CONTROLE DE FILA (CONCURRENCY)
+# 🔥 CONTROLE DE FILA: Evita que dois deploys rodem ao mesmo tempo
 concurrency:
-  group: production-deployment # Nome único para a fila
-  cancel-in-progress: false    # false = ESPERA terminar (Fila). true = Cancela o atual.
+  group: production-deployment
+  cancel-in-progress: false
 
 jobs:
   web-deploy:
@@ -36,13 +36,17 @@ jobs:
         protocol: ftps
         security: loose
         
-        # CORREÇÃO AQUI: Como seu usuário FTP já cai em public_html,
-        # o caminho deve começar direto em wp-content.
+        # Caminho do plugin na Hostinger
         server-dir: /wp-content/plugins/zeneyer-auth/
         
+        # 🛡️ EXCLUSÕES BLINDADAS
         exclude: |
           **/.git*
-          **/.github*
+          **/.git/**
+          **/.github/**
           **/README.md
           **/composer.json
           **/composer.lock
+          **/.gitignore
+          **/LICENSE
+          **/DEVELOPER.md
