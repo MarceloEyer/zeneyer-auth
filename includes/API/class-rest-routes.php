@@ -193,6 +193,7 @@ class Rest_Routes {
 					'id'           => $user->ID,
 					'email'        => $user->user_email,
 					'display_name' => $user->display_name,
+					'name'         => $user->display_name,
                     'roles'        => $user->roles,
 					'avatar'       => get_avatar_url( $user->ID ),
 				)
@@ -200,3 +201,4 @@ class Rest_Routes {
 		);
 	}
 }
+
