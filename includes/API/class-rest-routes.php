@@ -60,6 +60,13 @@ class Rest_Routes {
 			'callback'            => array( __CLASS__, 'set_password' ),
 			'permission_callback' => '__return_true',
 		) );
+
+				// 6. Settings (Retorna configurações públicas como Google ID)
+				register_rest_route( self::NAMESPACE, '/settings', array(
+								'methods'             => \WP_REST_Server::READABLE, // GET
+								'callback'            => array( __CLASS__, 'get_public_settings' ),
+								'permission_callback' => '__return_true', // Público
+							) );
 	}
 
 	/**
@@ -174,4 +181,21 @@ class Rest_Routes {
 	}
 	
 	// ... Implementação do Reset Password (simplificada para brevidade aqui, mas seguiria a mesma lógica)
+
+		/**
+		 * Endpoint: GET /settings
+		 * Retorna configurações públicas para o Frontend.
+		 */
+		public static function get_public_settings() {
+					$options = get_option('zeneyer_auth_settings');
+
+					return array(
+									'success' => true,
+									'data'    => array(
+														'google_client_id' => isset($options['google_client_id']) ? $options['google_client_id'] : '',
+														// Adicione outras configs públicas aqui se precisar
+													)
+								);
+				}
 }
+
