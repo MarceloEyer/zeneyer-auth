@@ -8,7 +8,7 @@
  * Requires PHP:      7.4
  * Author:            ZenEyer Team
  * Author URI:        https://zeneyer.com
- * License:           GPL v2 or later
+ * License:           GPL v2 or later 
  * Text Domain:       zeneyer-auth
  * Domain Path:       /languages
  *
@@ -94,3 +94,4 @@ final class ZenEyer_Auth_Init {
 }
 
 ZenEyer_Auth_Init::get_instance();
+
