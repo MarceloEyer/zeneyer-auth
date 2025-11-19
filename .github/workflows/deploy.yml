@@ -29,11 +29,11 @@ jobs:
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
         protocol: ftps
-        # Tenta ignorar erros de SSL se o certificado da Hostinger for compartilhado
-        security: loose 
+        security: loose
         
-        # CAMINHO CORRIGIDO (Sem /home/u...)
-        server-dir: /domains/djzeneyer.com/public_html/wp-content/plugins/zeneyer-auth/
+        # CORREÇÃO AQUI: Como seu usuário FTP já cai em public_html,
+        # o caminho deve começar direto em wp-content.
+        server-dir: /wp-content/plugins/zeneyer-auth/
         
         exclude: |
           **/.git*
