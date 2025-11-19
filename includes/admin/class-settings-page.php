@@ -38,8 +38,6 @@ class Settings_Page {
             'zeneyer_google_section',
             ['label_for' => 'google_client_id']
         );
-        
-        // Adicione mais campos aqui se necessário no futuro (ex: JWT Secret manual)
     }
 
     public function render_field_input($args) {
@@ -50,10 +48,8 @@ class Settings_Page {
     }
 
     public function render_page() {
-        // Gera o texto dinâmico com a URL real do site
-        $api_url = get_rest_url(null, 'zeneyer/v1');
+        $api_url = get_rest_url(null, 'zeneyer-auth/v1'); // Namespace NOVO
         
-        // O Prompt Mágico para IAs (Atualizado com Password Reset)
         $ai_prompt = "
 # ZenEyer Auth API Contract (Headless WordPress)
 
@@ -61,31 +57,23 @@ class Settings_Page {
 **Auth Method:** Bearer Token (JWT)
 
 ## 📡 Endpoints
-
-| Method | Endpoint | Body / Params | Description |
-| :--- | :--- | :--- | :--- |
-| **GET** | `/settings` | *None* | Get public configs (e.g., `google_client_id`). |
-| **POST** | `/auth/login` | `{ email, password }` | Login with credentials. Returns JWT + User. |
-| **POST** | `/auth/register` | `{ email, password, name }` | Create account. Returns JWT + User. |
-| **POST** | `/auth/google` | `{ id_token }` | Send Google OIDC token. Returns JWT + User. |
-| **POST** | `/auth/validate` | *Header: Bearer Token* | Verify if token is still valid. |
-| **GET** | `/auth/me` | *Header: Bearer Token* | Get current user profile (ID, Role, Avatar). |
-| **POST** | `/auth/password/reset` | `{ email }` | Request 6-digit reset code via email. |
-| **POST** | `/auth/password/set` | `{ email, code, password }` | Set new password using the code. |
-
-## 🧠 Frontend Logic (React/Vite)
-1. **Init:** Call `/settings` to fetch `google_client_id`. Initialize `GoogleOAuthProvider`.
-2. **Session:** On load, check `localStorage`. If token exists, call `/auth/validate`.
-3. **Google:** Use `@react-oauth/google`. On success, send `credential` to `/auth/google`.
-4. **Security:** If API returns `401` or `403`, clear localStorage and redirect to login.
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| **GET** | `/settings` | Get public configs (Google ID). |
+| **POST** | `/auth/login` | Login email/pass. |
+| **POST** | `/auth/register` | Create account. |
+| **POST** | `/auth/google` | Login with Google ID Token. |
+| **POST** | `/auth/validate` | Verify JWT. |
+| **GET** | `/auth/me` | Get profile. |
+| **POST** | `/auth/password/reset` | Request reset code. |
+| **POST** | `/auth/password/set` | Set new password. |
 ";
         ?>
         <div class="wrap">
             <h1>🔐 ZenEyer Auth <span style="font-size: 12px; background: #e5e7eb; padding: 2px 8px; border-radius: 10px; color: #374151;">v1.2</span></h1>
             
             <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                
-                <div style="flex: 1; min-width: 300px; background: #fff; padding: 20px; border: 1px solid #ccd0d4; box-shadow: 0 1px 1px rgba(0,0,0,.04);">
+                <div style="flex: 1; min-width: 300px; background: #fff; padding: 20px; border: 1px solid #ccd0d4;">
                     <h2>Configuração</h2>
                     <form action="options.php" method="post">
                         <?php
@@ -95,33 +83,12 @@ class Settings_Page {
                         ?>
                     </form>
                 </div>
-
                 <div style="flex: 1; min-width: 300px; background: #f0f0f1; padding: 20px; border: 1px solid #ccd0d4;">
-                    <h2 style="margin-top: 0;">🤖 AI & Developer Context</h2>
-                    <p>Copie o texto abaixo e cole no <strong>ChatGPT, Claude ou Gemini</strong> para que eles criem o Frontend para você automaticamente.</p>
-                    
-                    <textarea id="ai-prompt" style="width: 100%; height: 300px; font-family: monospace; font-size: 12px; background: #fff; border: 1px solid #ddd;" readonly><?php echo trim($ai_prompt); ?></textarea>
-                    
-                    <p>
-                        <button type="button" class="button button-primary" onclick="copyPrompt()">Copiar Contexto para IA</button>
-                        <span id="copy-msg" style="margin-left: 10px; color: green; display: none; font-weight: bold;">Copiado!</span>
-                    </p>
+                    <h2 style="margin-top: 0;">🤖 AI Context</h2>
+                    <textarea id="ai-prompt" style="width: 100%; height: 300px; font-family: monospace; font-size: 12px;" readonly><?php echo trim($ai_prompt); ?></textarea>
+                    <button type="button" class="button" onclick="document.getElementById('ai-prompt').select();document.execCommand('copy');">Copiar</button>
                 </div>
             </div>
-
-            <script>
-            function copyPrompt() {
-                var copyText = document.getElementById("ai-prompt");
-                copyText.select();
-                document.execCommand("copy");
-                
-                var msg = document.getElementById("copy-msg");
-                msg.style.display = "inline";
-                setTimeout(function() {
-                    msg.style.display = "none";
-                }, 2000);
-            }
-            </script>
         </div>
         <?php
     }
