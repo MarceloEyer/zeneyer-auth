@@ -1,0 +1,43 @@
+name: Deploy to Hostinger
+
+on:
+  push:
+    branches:
+      - main  # O robô roda toda vez que você der push na main
+
+jobs:
+  web-deploy:
+    name: 🎉 Deploy Plugin
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Pega o seu código do GitHub
+    - name: 🚚 Get latest code
+      uses: actions/checkout@v4
+
+    # 2. Instala o PHP no servidor do robô para poder rodar o Composer
+    - name: 🐘 Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.1' # Versão segura e rápida
+
+    # 3. Instala as dependências (Gera a pasta /vendor)
+    - name: 📦 Install Dependencies
+      run: composer install --no-dev --optimize-autoloader
+
+    # 4. Envia tudo para a Hostinger via FTP
+    - name: 🚀 Upload to Hostinger
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        protocol: ftps # Hostinger suporta FTPS (mais seguro)
+        # Cuidado aqui: Caminho EXATO para a pasta do plugin na Hostinger
+        server-dir: /domains/seusite.com/public_html/wp-content/plugins/zeneyer-auth/
+        exclude: |
+          **/.git*
+          **/.github*
+          **/README.md
+          **/composer.json
+          **/composer.lock
