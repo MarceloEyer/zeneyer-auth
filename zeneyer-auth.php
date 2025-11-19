@@ -3,7 +3,7 @@
  * Plugin Name:       ZenEyer Auth
  * Plugin URI:        https://github.com/zeneyer/auth-plugin
  * Description:       A minimalist, high-performance JWT Authentication plugin designed specifically for Headless WordPress & React applications.
- * Version:           1.0.1
+ * Version:           1.1.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            ZenEyer Team
@@ -19,11 +19,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; 
 }
 
-define( 'ZENEYER_AUTH_VERSION', '1.0.1' );
+define( 'ZENEYER_AUTH_VERSION', '1.1.0' );
 define( 'ZENEYER_AUTH_PATH', plugin_dir_path( __FILE__ ) );
 define( 'ZENEYER_AUTH_URL', plugin_dir_url( __FILE__ ) );
 
-// Carrega o Autoloader do Composer
+// 1. Carrega Bibliotecas Externas (Firebase JWT)
 if ( file_exists( ZENEYER_AUTH_PATH . 'vendor/autoload.php' ) ) {
 	require_once ZENEYER_AUTH_PATH . 'vendor/autoload.php';
 }
@@ -44,22 +44,35 @@ final class ZenEyer_Auth_Init {
 		$this->register_hooks();
 	}
 
+	/**
+	 * Carrega todos os arquivos necessários manualmente.
+	 * Isso evita erros 500 de "Class not found".
+	 */
 	private function load_dependencies() {
-        // 1. Carrega classes Core
-        if ( file_exists( ZENEYER_AUTH_PATH . 'includes/class-activator.php' ) ) {
-		    require_once ZENEYER_AUTH_PATH . 'includes/class-activator.php';
-        }
+        // A. Core & Utils
+        $this->load_file( 'includes/class-activator.php' );
+        
+        // B. O Cérebro (JWT Manager) - CRÍTICO
+        $this->load_file( 'includes/Core/class-jwt-manager.php' );
 
-        // 2. Carrega a API
-        if ( file_exists( ZENEYER_AUTH_PATH . 'includes/API/class-rest-routes.php' ) ) {
-		    require_once ZENEYER_AUTH_PATH . 'includes/API/class-rest-routes.php';
-        }
+        // C. Autenticação (Google)
+        $this->load_file( 'includes/Auth/class-google-provider.php' );
 
-        // 3. Carrega o Admin (Menu de Configurações) - NOVO!
-        if ( file_exists( ZENEYER_AUTH_PATH . 'includes/admin/class-settings-page.php' ) ) {
-            require_once ZENEYER_AUTH_PATH . 'includes/admin/class-settings-page.php';
-        }
+        // D. API (Rotas)
+        $this->load_file( 'includes/API/class-rest-routes.php' );
+
+        // E. Admin (Tela de Configurações)
+        $this->load_file( 'includes/admin/class-settings-page.php' );
 	}
+
+    /**
+     * Helper para carregar arquivos com verificação
+     */
+    private function load_file( $path ) {
+        if ( file_exists( ZENEYER_AUTH_PATH . $path ) ) {
+            require_once ZENEYER_AUTH_PATH . $path;
+        }
+    }
 
 	private function register_hooks() {
         // Registra Rotas API
@@ -72,8 +85,8 @@ final class ZenEyer_Auth_Init {
 		    register_activation_hook( __FILE__, array( 'ZenEyer\Auth\Activator', 'activate' ) );
         }
 
-        // Registra Menu de Admin - NOVO!
-        if ( class_exists( 'ZenEyer\Auth\Admin\Settings_Page' ) ) {
+        // Registra Menu de Admin
+        if ( is_admin() && class_exists( 'ZenEyer\Auth\Admin\Settings_Page' ) ) {
             $settings = new \ZenEyer\Auth\Admin\Settings_Page();
             $settings->init();
         }
