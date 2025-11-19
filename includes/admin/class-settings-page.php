@@ -38,6 +38,8 @@ class Settings_Page {
             'zeneyer_google_section',
             ['label_for' => 'google_client_id']
         );
+        
+        // Adicione mais campos aqui se necessário no futuro (ex: JWT Secret manual)
     }
 
     public function render_field_input($args) {
@@ -50,6 +52,8 @@ class Settings_Page {
     public function render_page() {
         // Gera o texto dinâmico com a URL real do site
         $api_url = get_rest_url(null, 'zeneyer/v1');
+        
+        // O Prompt Mágico para IAs (Atualizado com Password Reset)
         $ai_prompt = "
 # ZenEyer Auth API Contract (Headless WordPress)
 
@@ -66,6 +70,8 @@ class Settings_Page {
 | **POST** | `/auth/google` | `{ id_token }` | Send Google OIDC token. Returns JWT + User. |
 | **POST** | `/auth/validate` | *Header: Bearer Token* | Verify if token is still valid. |
 | **GET** | `/auth/me` | *Header: Bearer Token* | Get current user profile (ID, Role, Avatar). |
+| **POST** | `/auth/password/reset` | `{ email }` | Request 6-digit reset code via email. |
+| **POST** | `/auth/password/set` | `{ email, code, password }` | Set new password using the code. |
 
 ## 🧠 Frontend Logic (React/Vite)
 1. **Init:** Call `/settings` to fetch `google_client_id`. Initialize `GoogleOAuthProvider`.
@@ -75,7 +81,7 @@ class Settings_Page {
 ";
         ?>
         <div class="wrap">
-            <h1>🔐 ZenEyer Auth</h1>
+            <h1>🔐 ZenEyer Auth <span style="font-size: 12px; background: #e5e7eb; padding: 2px 8px; border-radius: 10px; color: #374151;">v1.2</span></h1>
             
             <div style="display: flex; gap: 20px; flex-wrap: wrap;">
                 
@@ -94,11 +100,11 @@ class Settings_Page {
                     <h2 style="margin-top: 0;">🤖 AI & Developer Context</h2>
                     <p>Copie o texto abaixo e cole no <strong>ChatGPT, Claude ou Gemini</strong> para que eles criem o Frontend para você automaticamente.</p>
                     
-                    <textarea id="ai-prompt" style="width: 100%; height: 300px; font-family: monospace; font-size: 12px; background: #fff;" readonly><?php echo trim($ai_prompt); ?></textarea>
+                    <textarea id="ai-prompt" style="width: 100%; height: 300px; font-family: monospace; font-size: 12px; background: #fff; border: 1px solid #ddd;" readonly><?php echo trim($ai_prompt); ?></textarea>
                     
                     <p>
                         <button type="button" class="button button-primary" onclick="copyPrompt()">Copiar Contexto para IA</button>
-                        <span id="copy-msg" style="margin-left: 10px; color: green; display: none;">Copiado!</span>
+                        <span id="copy-msg" style="margin-left: 10px; color: green; display: none; font-weight: bold;">Copiado!</span>
                     </p>
                 </div>
             </div>
@@ -108,9 +114,11 @@ class Settings_Page {
                 var copyText = document.getElementById("ai-prompt");
                 copyText.select();
                 document.execCommand("copy");
-                document.getElementById("copy-msg").style.display = "inline";
+                
+                var msg = document.getElementById("copy-msg");
+                msg.style.display = "inline";
                 setTimeout(function() {
-                    document.getElementById("copy-msg").style.display = "none";
+                    msg.style.display = "none";
                 }, 2000);
             }
             </script>
