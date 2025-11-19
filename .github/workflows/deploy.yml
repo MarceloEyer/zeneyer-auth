@@ -5,6 +5,11 @@ on:
     branches:
       - main
 
+# 🔥 NOVO: CONTROLE DE FILA (CONCURRENCY)
+concurrency:
+  group: production-deployment # Nome único para a fila
+  cancel-in-progress: false    # false = ESPERA terminar (Fila). true = Cancela o atual.
+
 jobs:
   web-deploy:
     name: 🎉 Deploy Plugin
